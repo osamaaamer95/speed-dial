@@ -15,10 +15,17 @@
       "title": "Speed Dial",
       "description": "Show links for your favorite contacts",
       "mode": "view"
+    },
+    {
+      "name": "form",
+      "title": "Add Speed Dial",
+      "description": "Add a new speed dial contact",
+      "mode": "view"
     }
   ],
   "dependencies": {
-    "@raycast/api": "^1.50.3"
+    "@raycast/api": "^1.50.3",
+    "@raycast/utils": "^1.7.1"
   },
   "devDependencies": {
     "@raycast/eslint-config": "1.0.5",

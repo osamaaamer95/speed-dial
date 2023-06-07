@@ -1,27 +1,46 @@
-import { ActionPanel, Action, Icon, List } from "@raycast/api";
-
-const ITEMS = Array.from(Array(3).keys()).map((key) => {
-  return {
-    id: key,
-    title: "Title " + key,
-    subtitle: "Subtitle",
-    accessory: "Accessory",
-  };
-});
+import { ActionPanel, Action, List, LocalStorage, Icon } from "@raycast/api";
+import AddContact from "./form";
+import { useEffect, useState } from "react";
+import { Contact } from "./interfaces";
+import { AppIcon } from "./enums";
 
 export default function Command() {
+  const [contacts, setContacts] = useState<Contact[]>([]);
+
+  useEffect(() => {
+    async function getContacts() {
+      const contacts = await LocalStorage.getItem<string>("contacts");
+      console.log("contacts", contacts);
+      setContacts(JSON.parse(contacts ?? "[]"));
+    }
+    getContacts();
+  }, []);
+
+  async function removeContact(value: Contact) {
+    const newContacts = contacts.filter((item) => item.url !== value.url);
+    setContacts(newContacts);
+    await LocalStorage.setItem("contacts", JSON.stringify(newContacts));
+  }
+
   return (
-    <List>
-      {ITEMS.map((item) => (
+    <List
+      actions={
+        <ActionPanel>
+          <Action.Push title="Add Contact" target={<AddContact />} />
+        </ActionPanel>
+      }
+    >
+      {contacts.map((item) => (
         <List.Item
-          key={item.id}
-          icon="list-icon.png"
-          title={item.title}
-          subtitle={item.subtitle}
-          accessories={[{ icon: Icon.Text, text: item.accessory }]}
+          key={item.url}
+          icon={item.icon === AppIcon.Generic ? Icon.Phone : { source: `icons/${item.icon}` }}
+          title={item.name}
+          accessories={[{ text: item.app }]}
           actions={
             <ActionPanel>
-              <Action.CopyToClipboard content={item.title} />
+              <Action.OpenInBrowser url={item.url} />
+              <Action.CopyToClipboard content={item.url} />
+              <Action title="Remove" onAction={() => removeContact(item)} />
             </ActionPanel>
           }
         />
