@@ -1,4 +1,4 @@
-import { ActionPanel, Action, List, LocalStorage, Icon } from "@raycast/api";
+import { ActionPanel, Action, List, LocalStorage, Icon, confirmAlert } from "@raycast/api";
 import AddContact from "./form";
 import { useEffect, useState } from "react";
 import { Contact } from "./interfaces";
@@ -10,16 +10,17 @@ export default function Command() {
   useEffect(() => {
     async function getContacts() {
       const contacts = await LocalStorage.getItem<string>("contacts");
-      console.log("contacts", contacts);
       setContacts(JSON.parse(contacts ?? "[]"));
     }
     getContacts();
   }, []);
 
   async function removeContact(value: Contact) {
-    const newContacts = contacts.filter((item) => item.url !== value.url);
-    setContacts(newContacts);
-    await LocalStorage.setItem("contacts", JSON.stringify(newContacts));
+    if (await confirmAlert({ title: "Are you sure?" })) {
+      const newContacts = contacts.filter((item) => item.url !== value.url);
+      setContacts(newContacts);
+      await LocalStorage.setItem("contacts", JSON.stringify(newContacts));
+    }
   }
 
   return (

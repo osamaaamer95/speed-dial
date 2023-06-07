@@ -1,12 +1,21 @@
+import { useEffect, useState } from "react";
 import { Action, ActionPanel, Form, LocalStorage, Toast, popToRoot, showToast } from "@raycast/api";
 import { useForm, FormValidation } from "@raycast/utils";
-import { useEffect, useState } from "react";
 
 import { Contact } from "./interfaces";
 import { AppIcon } from "./enums";
 
 export default function AddContact() {
   const [contacts, setContacts] = useState<Contact[]>([]);
+
+  // get contacts from local storage
+  useEffect(() => {
+    async function getContacts() {
+      const contacts = await LocalStorage.getItem<string>("contacts");
+      setContacts(JSON.parse(contacts ?? "[]"));
+    }
+    getContacts();
+  }, []);
 
   const { handleSubmit, itemProps } = useForm<Contact>({
     onSubmit(values) {
@@ -44,18 +53,8 @@ export default function AddContact() {
     },
   });
 
-  useEffect(() => {
-    async function getContacts() {
-      const contacts = await LocalStorage.getItem<string>("contacts");
-      console.log("contacts", contacts);
-      setContacts(JSON.parse(contacts ?? "[]"));
-    }
-    getContacts();
-  }, []);
-
   return (
     <Form
-      enableDrafts
       actions={
         <ActionPanel>
           <Action.SubmitForm onSubmit={handleSubmit} />

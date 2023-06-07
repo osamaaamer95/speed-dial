@@ -12,14 +12,14 @@
   "commands": [
     {
       "name": "index",
-      "title": "Speed Dial",
-      "description": "Show links for your favorite contacts",
+      "title": "View Contacts",
+      "description": "Show saved contacts",
       "mode": "view"
     },
     {
       "name": "form",
-      "title": "Add Speed Dial",
-      "description": "Add a new speed dial contact",
+      "title": "Add Contact",
+      "description": "Add a new contact",
       "mode": "view"
     }
   ],
