@@ -2,11 +2,12 @@
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "speed-dial",
   "title": "Speed Dial",
-  "description": "Keep links handy for important contacts using Zoom, Teams, Google Meet, etc",
+  "description": "Add contacts to speed dial to start meetings with one click",
   "icon": "command-icon.png",
   "author": "osama_aamer",
   "categories": [
-    "Communication"
+    "Communication",
+    "Productivity"
   ],
   "license": "MIT",
   "commands": [

@@ -74,7 +74,7 @@ export default function AddContact() {
     <Form
       actions={
         <ActionPanel>
-          <Action.SubmitForm onSubmit={handleSubmit} />
+          <Action.SubmitForm title="Add Contact" onSubmit={handleSubmit} />
         </ActionPanel>
       }
     >
