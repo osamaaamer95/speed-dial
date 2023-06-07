@@ -55,7 +55,6 @@ export default function AddContact() {
 
   const detectApp = (event: Form.Event<string>) => {
     const url = event.target.value;
-    console.log(url);
     if (!url) {
       setDetectedApp(undefined);
       return;
