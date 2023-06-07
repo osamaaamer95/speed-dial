@@ -34,14 +34,20 @@ export default function Command() {
       {contacts.map((item) => (
         <List.Item
           key={item.url}
-          icon={item.icon === AppIcon.Generic ? Icon.Phone : { source: `icons/${item.icon}` }}
+          icon={item.icon === AppIcon.Generic ? Icon.Person : { source: `icons/${item.icon}` }}
           title={item.name}
+          subtitle={item.url}
           accessories={[{ text: item.app }]}
           actions={
             <ActionPanel>
               <Action.OpenInBrowser url={item.url} />
               <Action.CopyToClipboard content={item.url} />
-              <Action title="Remove" onAction={() => removeContact(item)} />
+              <Action
+                title="Remove"
+                icon={Icon.Trash}
+                shortcut={{ modifiers: ["cmd"], key: "backspace" }}
+                onAction={() => removeContact(item)}
+              />
             </ActionPanel>
           }
         />
