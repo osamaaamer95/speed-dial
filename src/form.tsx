@@ -7,6 +7,10 @@ import { AppIcon } from "./enums";
 
 export default function AddContact() {
   const [contacts, setContacts] = useState<Contact[]>([]);
+  const [detectedApp, setDetectedApp] = useState<{
+    app: string;
+    icon: AppIcon;
+  }>();
 
   // get contacts from local storage
   useEffect(() => {
@@ -19,21 +23,17 @@ export default function AddContact() {
 
   const { handleSubmit, itemProps } = useForm<Contact>({
     onSubmit(values) {
-      if (values.url.includes("zoom.us")) {
-        values.icon = AppIcon.Zoom;
-        values.app = "Zoom";
-      } else if (values.url.includes("meet.google.com")) {
-        values.icon = AppIcon.Meet;
-        values.app = "Google Meet";
-      } else if (values.url.includes("teams.microsoft.com")) {
-        values.icon = AppIcon.Teams;
-        values.app = "Microsoft Teams";
-      } else {
-        values.icon = AppIcon.Generic;
-        values.app = "Speed Dial";
-      }
-
-      LocalStorage.setItem("contacts", JSON.stringify([...contacts, values]));
+      LocalStorage.setItem(
+        "contacts",
+        JSON.stringify([
+          ...contacts,
+          {
+            ...values,
+            icon: detectedApp?.icon ?? AppIcon.Generic,
+            app: detectedApp?.app ?? "Generic",
+          },
+        ])
+      );
       showToast({
         style: Toast.Style.Success,
         title: "Yay!",
@@ -53,6 +53,24 @@ export default function AddContact() {
     },
   });
 
+  const detectApp = (event: Form.Event<string>) => {
+    const url = event.target.value;
+    console.log(url);
+    if (!url) {
+      setDetectedApp(undefined);
+      return;
+    }
+    if (isZoomLink(url)) {
+      setDetectedApp({ app: "Zoom", icon: AppIcon.Zoom });
+    } else if (isMeetLink(url)) {
+      setDetectedApp({ app: "Google Meet", icon: AppIcon.Meet });
+    } else if (isTeamsLink(url)) {
+      setDetectedApp({ app: "Microsoft Teams", icon: AppIcon.Teams });
+    } else {
+      setDetectedApp(undefined);
+    }
+  };
+
   return (
     <Form
       actions={
@@ -61,21 +79,30 @@ export default function AddContact() {
         </ActionPanel>
       }
     >
+      <Form.TextField title="Meeting URL" placeholder="Enter meeting URL" {...itemProps.url} onBlur={detectApp} />
+      {detectedApp && <Form.Description title="App" text={`${detectedApp.app}`} />}
+      <Form.Separator />
       <Form.TextField title="Full Name" placeholder="Enter contact name" {...itemProps.name} />
-      <Form.TextField title="Meeting URL" placeholder="Enter meeting URL" {...itemProps.url} />
     </Form>
   );
 }
 
 const isValidUrl = (urlString: string) => {
-  const urlPattern = new RegExp(
-    "^(https?:\\/\\/)?" + // validate protocol
-      "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // validate domain name
-      "((\\d{1,3}\\.){3}\\d{1,3}))" + // validate OR ip (v4) address
-      "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // validate port and path
-      "(\\?[;&a-z\\d%_.~+=-]*)?" + // validate query string
-      "(\\#[-a-z\\d_]*)?$",
-    "i"
-  ); // validate fragment locator
+  const urlPattern = new RegExp(/^(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+$/g);
   return !!urlPattern.test(urlString);
+};
+
+const isZoomLink = (urlString: string) => {
+  const zoomPattern = new RegExp(/https:\/\/[\w-]*\.?zoom.us\/(j|my)\/[\d\w?=-]+/g);
+  return !!zoomPattern.test(urlString);
+};
+
+const isTeamsLink = (urlString: string) => {
+  const teamsPattern = new RegExp(/https:\/\/teams.microsoft.com\/l\/meetup-join\/[\d\w?=-]+/g);
+  return !!teamsPattern.test(urlString);
+};
+
+const isMeetLink = (urlString: string) => {
+  const meetPattern = new RegExp(/https:\/\/meet.google.com\/[\d\w?=-]+/g);
+  return !!meetPattern.test(urlString);
 };
