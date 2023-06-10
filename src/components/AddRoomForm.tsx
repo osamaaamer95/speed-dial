@@ -36,8 +36,7 @@ export default function AddRoomForm() {
           });
           popToRoot();
         })
-        .catch((err) => {
-          console.error(err);
+        .catch(() => {
           throw new Error("Error adding room");
         });
     },

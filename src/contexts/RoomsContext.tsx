@@ -7,7 +7,7 @@ type RoomContextType = {
   loading: boolean;
   setRooms: React.Dispatch<React.SetStateAction<Room[]>>;
   addRoom: (room: Room) => Promise<void>;
-  editRoomName: (room: Room) => Promise<void>;
+  editRoomName: (arg: { url: string; name: string }) => Promise<void>;
   removeRoom: (room: Room) => Promise<void>;
 };
 
@@ -37,12 +37,13 @@ const RoomProvider = ({ children }: RoomProviderProps) => {
     await LocalStorage.setItem("rooms", JSON.stringify(newRooms));
   };
 
-  const editRoomName = async (room: Room) => {
+  const editRoomName = async (args: { url: string; name: string }) => {
+    const { url, name } = args;
     const newRooms = rooms.map((item) => {
-      if (item.url === room.url) {
+      if (item.url === url) {
         return {
           ...item,
-          name: room.name,
+          name,
         };
       }
       return item;

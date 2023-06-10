@@ -2,7 +2,7 @@ import { ActionPanel, Action, List, Icon, showToast, Toast } from "@raycast/api"
 
 import { RoomContext } from "../contexts/RoomsContext";
 import { useContext } from "react";
-import EditRoomForm from "./EditRoomForm";
+import EditRoom from "../edit-room";
 import AddRoom from "./AddRoomForm";
 import { AppIcons, SupportedApps } from "../types";
 
@@ -39,7 +39,7 @@ export default function ListRooms() {
                 title="Edit Name"
                 icon={Icon.Pencil}
                 shortcut={{ modifiers: ["cmd"], key: "e" }}
-                target={<EditRoomForm room={item} />}
+                target={<EditRoom room={item} />}
               />
               <Action
                 title="Remove"

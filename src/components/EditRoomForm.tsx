@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Action, ActionPanel, Form, Toast, showToast, useNavigation } from "@raycast/api";
+import { Action, ActionPanel, Form, Toast, popToRoot, showToast } from "@raycast/api";
 import { useForm, FormValidation } from "@raycast/utils";
 
 import { RoomContext } from "../contexts/RoomsContext";
@@ -15,20 +15,17 @@ export default function EditRoomForm(props: { room: Room }) {
 
   const { editRoomName } = roomContext;
 
-  const { pop } = useNavigation();
-
   const { handleSubmit, itemProps } = useForm<Room>({
     initialValues: room,
     onSubmit(values) {
-      editRoomName(values);
-
-      showToast({
-        style: Toast.Style.Success,
-        title: "Yay!",
-        message: `Room name edited`,
+      editRoomName({ url: room.url, name: values.name }).then(() => {
+        showToast({
+          style: Toast.Style.Success,
+          title: "Yay!",
+          message: `Room name edited`,
+        });
+        popToRoot();
       });
-
-      pop();
     },
     validation: {
       name: FormValidation.Required,
