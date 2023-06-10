@@ -1,6 +1,6 @@
 import { AppIcon } from "./enums";
 
-export interface Contact {
+export interface MeetingRoom {
   url: string;
   name: string;
   app: string;

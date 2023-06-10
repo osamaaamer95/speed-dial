@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { Action, ActionPanel, Form, LocalStorage, Toast, popToRoot, showToast } from "@raycast/api";
 import { useForm, FormValidation } from "@raycast/utils";
 
-import { Contact } from "./interfaces";
+import { MeetingRoom } from "./interfaces";
 import { AppIcon } from "./enums";
 
-export default function AddContact() {
-  const [contacts, setContacts] = useState<Contact[]>([]);
+export default function AddRoom() {
+  const [rooms, setRooms] = useState<MeetingRoom[]>([]);
   const [detectedApp, setDetectedApp] = useState<{
     app: string;
     icon: AppIcon;
@@ -16,17 +16,17 @@ export default function AddContact() {
   useEffect(() => {
     async function getContacts() {
       const contacts = await LocalStorage.getItem<string>("contacts");
-      setContacts(JSON.parse(contacts ?? "[]"));
+      setRooms(JSON.parse(contacts ?? "[]"));
     }
     getContacts();
   }, []);
 
-  const { handleSubmit, itemProps } = useForm<Contact>({
+  const { handleSubmit, itemProps } = useForm<MeetingRoom>({
     onSubmit(values) {
       LocalStorage.setItem(
-        "contacts",
+        "rooms",
         JSON.stringify([
-          ...contacts,
+          ...rooms,
           {
             ...values,
             icon: detectedApp?.icon ?? AppIcon.Generic,
@@ -74,14 +74,14 @@ export default function AddContact() {
     <Form
       actions={
         <ActionPanel>
-          <Action.SubmitForm title="Add Contact" onSubmit={handleSubmit} />
+          <Action.SubmitForm title="Add Room" onSubmit={handleSubmit} />
         </ActionPanel>
       }
     >
       <Form.TextField title="Meeting URL" placeholder="Enter meeting URL" {...itemProps.url} onBlur={detectApp} />
-      {detectedApp && <Form.Description title="App" text={`${detectedApp.app}`} />}
       <Form.Separator />
-      <Form.TextField title="Full Name" placeholder="Enter contact name" {...itemProps.name} />
+      <Form.TextField title="Meeting Room Name" placeholder="1-1 w/ James, Sales Standup..." {...itemProps.name} />
+      {detectedApp && <Form.Description title="App" text={`${detectedApp.app}`} />}
     </Form>
   );
 }
