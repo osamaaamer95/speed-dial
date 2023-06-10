@@ -12,13 +12,13 @@
   "license": "MIT",
   "commands": [
     {
-      "name": "index",
+      "name": "list-rooms",
       "title": "View Rooms",
       "description": "Show a list of your saved meeting rooms",
       "mode": "view"
     },
     {
-      "name": "form",
+      "name": "add-room",
       "title": "Add Room",
       "description": "Add a new meeting room",
       "mode": "view"

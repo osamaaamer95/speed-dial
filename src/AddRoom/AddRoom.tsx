@@ -1,45 +1,45 @@
-import { useEffect, useState } from "react";
-import { Action, ActionPanel, Form, LocalStorage, Toast, popToRoot, showToast } from "@raycast/api";
+import { useContext, useState } from "react";
+import { Action, ActionPanel, Form, Toast, popToRoot, showToast } from "@raycast/api";
 import { useForm, FormValidation } from "@raycast/utils";
 
-import { MeetingRoom } from "./interfaces";
-import { AppIcon } from "./enums";
+import { AppIcons, SupportedApps } from "../enums";
+import { RoomContext } from "../RoomsContext";
+import { Room } from "../types";
 
 export default function AddRoom() {
-  const [rooms, setRooms] = useState<MeetingRoom[]>([]);
+  const roomContext = useContext(RoomContext);
+
+  if (!roomContext) {
+    throw new Error("Command must be used within a RoomProvider");
+  }
+
+  const { addRoom } = roomContext;
+
   const [detectedApp, setDetectedApp] = useState<{
-    app: string;
-    icon: AppIcon;
+    app: SupportedApps;
+    icon: AppIcons;
   }>();
 
-  // get contacts from local storage
-  useEffect(() => {
-    async function getContacts() {
-      const contacts = await LocalStorage.getItem<string>("contacts");
-      setRooms(JSON.parse(contacts ?? "[]"));
-    }
-    getContacts();
-  }, []);
-
-  const { handleSubmit, itemProps } = useForm<MeetingRoom>({
+  const { handleSubmit, itemProps } = useForm<Room>({
     onSubmit(values) {
-      LocalStorage.setItem(
-        "rooms",
-        JSON.stringify([
-          ...rooms,
-          {
-            ...values,
-            icon: detectedApp?.icon ?? AppIcon.Generic,
-            app: detectedApp?.app ?? "Generic",
-          },
-        ])
-      );
-      showToast({
-        style: Toast.Style.Success,
-        title: "Yay!",
-        message: `${values.name} added to Speed Dial`,
-      });
-      popToRoot();
+      // add the room to state and save to local storage
+      addRoom({
+        ...values,
+        icon: detectedApp?.icon ?? AppIcons.Generic,
+        app: detectedApp?.app ?? SupportedApps.Generic,
+      })
+        .then(() => {
+          showToast({
+            style: Toast.Style.Success,
+            title: "Yay!",
+            message: `${values.name} added to Speed Dial`,
+          });
+          popToRoot();
+        })
+        .catch((err) => {
+          console.error(err);
+          throw new Error("Error adding room");
+        });
     },
     validation: {
       name: FormValidation.Required,
@@ -60,11 +60,11 @@ export default function AddRoom() {
       return;
     }
     if (isZoomLink(url)) {
-      setDetectedApp({ app: "Zoom", icon: AppIcon.Zoom });
+      setDetectedApp({ app: SupportedApps.Zoom, icon: AppIcons.Zoom });
     } else if (isMeetLink(url)) {
-      setDetectedApp({ app: "Google Meet", icon: AppIcon.Meet });
+      setDetectedApp({ app: SupportedApps.Meet, icon: AppIcons.Meet });
     } else if (isTeamsLink(url)) {
-      setDetectedApp({ app: "Microsoft Teams", icon: AppIcon.Teams });
+      setDetectedApp({ app: SupportedApps.Teams, icon: AppIcons.Teams });
     } else {
       setDetectedApp(undefined);
     }
