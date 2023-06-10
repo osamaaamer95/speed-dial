@@ -1,7 +1,6 @@
-// RoomContext.tsx
 import React, { useState, useEffect } from "react";
 import { LocalStorage } from "@raycast/api";
-import { Room } from "./types";
+import { Room } from "../types";
 
 type RoomContextType = {
   rooms: Room[];
@@ -23,36 +22,22 @@ const RoomProvider = ({ children }: RoomProviderProps) => {
   const [rooms, setRooms] = useState<Room[]>([]);
 
   useEffect(() => {
-    console.log("Fetching rooms");
     async function getRooms() {
       const rooms = await LocalStorage.getItem<string>("rooms");
-      console.log(rooms);
       setRooms(JSON.parse(rooms ?? "[]") as Room[]);
     }
-    getRooms()
-      .then(() => {
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        throw new Error("Error fetching rooms");
-      });
+    getRooms().then(() => {
+      setLoading(false);
+    });
   }, []);
 
-  useEffect(() => {
-    console.log("Rooms changed");
-    console.log(rooms);
-  }, [rooms]);
-
   const addRoom = async (room: Room) => {
-    console.log("Adding room");
     const newRooms = [...rooms, room];
     setRooms(newRooms);
     await LocalStorage.setItem("rooms", JSON.stringify(newRooms));
   };
 
   const editRoomName = async (room: Room) => {
-    console.log("Editing room name");
     const newRooms = rooms.map((item) => {
       if (item.url === room.url) {
         return {
@@ -67,7 +52,6 @@ const RoomProvider = ({ children }: RoomProviderProps) => {
   };
 
   const removeRoom = async (room: Room) => {
-    console.log("Removing room");
     const newRooms = rooms.filter((item) => item.url !== room.url);
     setRooms(newRooms);
     await LocalStorage.setItem("rooms", JSON.stringify(newRooms));

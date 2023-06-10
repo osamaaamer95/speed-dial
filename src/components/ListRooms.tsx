@@ -1,13 +1,12 @@
 import { ActionPanel, Action, List, Icon, showToast, Toast } from "@raycast/api";
 
-import { AppIcons, SupportedApps } from "../enums";
-
-import { RoomContext } from "../RoomsContext";
+import { RoomContext } from "../contexts/RoomsContext";
 import { useContext } from "react";
-import EditRoom from "../EditRoomName/EditRoomName";
-import AddRoom from "../AddRoom/AddRoom";
+import EditRoomForm from "./EditRoomForm";
+import AddRoom from "./AddRoomForm";
+import { AppIcons, SupportedApps } from "../types";
 
-export default function RoomsList() {
+export default function ListRooms() {
   const roomContext = useContext(RoomContext);
 
   if (!roomContext) {
@@ -15,6 +14,7 @@ export default function RoomsList() {
   }
 
   const { rooms, removeRoom, loading } = roomContext;
+
   return (
     <List
       isLoading={loading}
@@ -39,7 +39,7 @@ export default function RoomsList() {
                 title="Edit Name"
                 icon={Icon.Pencil}
                 shortcut={{ modifiers: ["cmd"], key: "e" }}
-                target={<EditRoom room={item} />}
+                target={<EditRoomForm room={item} />}
               />
               <Action
                 title="Remove"

@@ -1,10 +1,10 @@
-import RoomsList from "./ListRooms/RoomsList";
-import { RoomProvider } from "./RoomsContext";
+import ListRooms from "./components/ListRooms";
+import { RoomProvider } from "./contexts/RoomsContext";
 
 export default function Command() {
   return (
     <RoomProvider>
-      <RoomsList />
+      <ListRooms />
     </RoomProvider>
   );
 }

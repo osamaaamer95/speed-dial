@@ -1,10 +1,10 @@
-import { RoomProvider } from "./RoomsContext";
-import AddRoom from "./AddRoom/AddRoom";
+import { RoomProvider } from "./contexts/RoomsContext";
+import AddRoomForm from "./components/AddRoomForm";
 
 export default function Command() {
   return (
     <RoomProvider>
-      <AddRoom />
+      <AddRoomForm />
     </RoomProvider>
   );
 }

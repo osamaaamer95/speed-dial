@@ -2,10 +2,11 @@ import { useContext } from "react";
 import { Action, ActionPanel, Form, Toast, showToast, useNavigation } from "@raycast/api";
 import { useForm, FormValidation } from "@raycast/utils";
 
-import { RoomContext } from "../RoomsContext";
+import { RoomContext } from "../contexts/RoomsContext";
 import { Room } from "../types";
 
-export default function EditRoom(props: { room: Room }) {
+export default function EditRoomForm(props: { room: Room }) {
+  const { room } = props;
   const roomContext = useContext(RoomContext);
 
   if (!roomContext) {
@@ -13,20 +14,18 @@ export default function EditRoom(props: { room: Room }) {
   }
 
   const { editRoomName } = roomContext;
-  const { room } = props;
 
   const { pop } = useNavigation();
 
   const { handleSubmit, itemProps } = useForm<Room>({
     initialValues: room,
     onSubmit(values) {
-      // edit name
       editRoomName(values);
 
       showToast({
         style: Toast.Style.Success,
         title: "Yay!",
-        message: `${values.name} edited`,
+        message: `Room name edited`,
       });
 
       pop();

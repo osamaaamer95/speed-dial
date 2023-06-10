@@ -2,11 +2,11 @@ import { useContext, useState } from "react";
 import { Action, ActionPanel, Form, Toast, popToRoot, showToast } from "@raycast/api";
 import { useForm, FormValidation } from "@raycast/utils";
 
-import { AppIcons, SupportedApps } from "../enums";
-import { RoomContext } from "../RoomsContext";
-import { Room } from "../types";
+import { RoomContext } from "../contexts/RoomsContext";
+import { AppIcons, Room, SupportedApps } from "../types";
+import { isMeetLink, isTeamsLink, isValidUrl, isZoomLink } from "../utils";
 
-export default function AddRoom() {
+export default function AddRoomForm() {
   const roomContext = useContext(RoomContext);
 
   if (!roomContext) {
@@ -32,7 +32,7 @@ export default function AddRoom() {
           showToast({
             style: Toast.Style.Success,
             title: "Yay!",
-            message: `${values.name} added to Speed Dial`,
+            message: `${values.name} added`,
           });
           popToRoot();
         })
@@ -85,23 +85,3 @@ export default function AddRoom() {
     </Form>
   );
 }
-
-const isValidUrl = (urlString: string) => {
-  const urlPattern = new RegExp(/^(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+$/g);
-  return !!urlPattern.test(urlString);
-};
-
-const isZoomLink = (urlString: string) => {
-  const zoomPattern = new RegExp(/https:\/\/[\w-]*\.?zoom.us\/(j|my)\/[\d\w?=-]+/g);
-  return !!zoomPattern.test(urlString);
-};
-
-const isTeamsLink = (urlString: string) => {
-  const teamsPattern = new RegExp(/https:\/\/teams.microsoft.com\/l\/meetup-join\/[\d\w?=-]+/g);
-  return !!teamsPattern.test(urlString);
-};
-
-const isMeetLink = (urlString: string) => {
-  const meetPattern = new RegExp(/https:\/\/meet.google.com\/[\d\w?=-]+/g);
-  return !!meetPattern.test(urlString);
-};
