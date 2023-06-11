@@ -1,6 +1,6 @@
 import { OAuth } from "@raycast/api";
 import fetch from "node-fetch";
-import { Calendar, GetCalendarsResponse } from "../types";
+import { Calendar, Event, FetchColorsResponse, GetCalendarsResponse, GetEventsResponse } from "../types";
 
 const clientId = "744024519316-itr7tgto1idb8bsm2o7r9gl8ph53dsmu.apps.googleusercontent.com";
 
@@ -68,7 +68,20 @@ async function refreshTokens(refreshToken: string): Promise<OAuth.TokenResponse>
   return tokenResponse;
 }
 
-// API
+export async function fetchColors(): Promise<FetchColorsResponse> {
+  const response = await fetch("https://www.googleapis.com/calendar/v3/colors", {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${(await client.getTokens())?.accessToken}`,
+    },
+  });
+  if (!response.ok) {
+    console.error("fetch items error:", await response.text());
+    throw new Error(response.statusText);
+  }
+  const json = (await response.json()) as FetchColorsResponse;
+  return json;
+}
 
 export async function fetchCalendars(): Promise<Calendar[]> {
   const params = new URLSearchParams();
@@ -85,5 +98,40 @@ export async function fetchCalendars(): Promise<Calendar[]> {
     throw new Error(response.statusText);
   }
   const json = (await response.json()) as GetCalendarsResponse;
+  return json.items;
+}
+
+export async function fetchEvents(calendarId: string): Promise<Event[]> {
+  const params = new URLSearchParams();
+  // get events from this month only
+  // calculate max time for end of current month
+  const timeMax = new Date();
+  timeMax.setMonth(timeMax.getMonth() + 3);
+  timeMax.setDate(0);
+  // calculate min time from three months ago
+  const timeMin = new Date();
+  timeMin.setMonth(timeMin.getMonth() - 3);
+  timeMin.setDate(1);
+
+  params.append("timeMax", timeMax.toISOString());
+  params.append("timeMin", timeMin.toISOString());
+
+  const url =
+    `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?` + params.toString();
+
+  console.log("fetching events from", url);
+
+  const response = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${(await client.getTokens())?.accessToken}`,
+    },
+  });
+  if (!response.ok) {
+    console.error("fetch items error:", await response.text());
+    throw new Error(response.statusText);
+  }
+  const json = (await response.json()) as GetEventsResponse;
+  console.log({ json });
   return json.items;
 }

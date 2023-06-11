@@ -46,6 +46,47 @@ type Calendar = {
   }[];
 };
 
+type FetchColorsResponse = {
+  calendar: { [key: string]: { background: string; foreground: string } };
+  event: { [key: string]: { background: string; foreground: string } };
+  kind: string;
+  updated: string;
+};
+
+type Event = {
+  kind: string;
+  etag: string;
+  id: string;
+  status: string;
+  htmlLink: string;
+  created: string;
+  updated: string;
+  summary: string;
+  description: string;
+  location: string;
+  hangoutLink?: string;
+  colorId: string;
+  creator: {
+    email: string;
+    self: boolean;
+  };
+  organizer: {
+    email: string;
+    self: boolean;
+  };
+};
+
+type GetEventsResponse = {
+  kind: string;
+  etag: string;
+  summary: string;
+  updated: string;
+  description: string;
+  timeZone: string;
+  accessRole: string;
+  items: Event[];
+};
+
 export { SupportedApps, AppIcons };
 
-export type { Room, GetCalendarsResponse, Calendar };
+export type { Room, GetCalendarsResponse, Calendar, Event, GetEventsResponse, FetchColorsResponse };
