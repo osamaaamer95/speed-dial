@@ -31,6 +31,9 @@ type Calendar = {
   etag: string;
   id: string;
   summary: string;
+  summaryOverride?: string;
+  description?: string;
+  primary?: boolean;
   timeZone: string;
   colorId: string;
   backgroundColor: string;

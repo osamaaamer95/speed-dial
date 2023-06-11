@@ -2,9 +2,6 @@ import { OAuth } from "@raycast/api";
 import fetch from "node-fetch";
 import { Calendar, GetCalendarsResponse } from "../types";
 
-// Create an OAuth client ID via https://console.developers.google.com/apis/credentials
-// As application type choose "iOS" (required for PKCE)
-// As Bundle ID enter: com.raycast
 const clientId = "744024519316-itr7tgto1idb8bsm2o7r9gl8ph53dsmu.apps.googleusercontent.com";
 
 const client = new OAuth.PKCEClient({
@@ -16,7 +13,6 @@ const client = new OAuth.PKCEClient({
 });
 
 // Authorization
-
 export async function authorize(): Promise<void> {
   const tokenSet = await client.getTokens();
   if (tokenSet?.accessToken) {
@@ -30,10 +26,14 @@ export async function authorize(): Promise<void> {
     endpoint: "https://accounts.google.com/o/oauth2/v2/auth",
     clientId: clientId,
     scope:
-      "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/calendar.readonly",
+      "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/calendar.events.readonly",
   });
   const { authorizationCode } = await client.authorize(authRequest);
   await client.setTokens(await fetchTokens(authRequest, authorizationCode));
+}
+
+export async function logout(): Promise<void> {
+  await client.removeTokens();
 }
 
 async function fetchTokens(authRequest: OAuth.AuthorizationRequest, authCode: string): Promise<OAuth.TokenResponse> {
