@@ -33,6 +33,7 @@ export default function ListEvents({ calendarId }: { calendarId: string }) {
           );
           setColors(colors);
           setItems(filteredEvents);
+          console.log("Loading false");
           setIsLoading(false);
         } catch (error) {
           console.error(error);
@@ -54,9 +55,11 @@ export default function ListEvents({ calendarId }: { calendarId: string }) {
       searchBarPlaceholder="Search events with meeting links"
       searchBarAccessory={<MonthsDropdown monthRanges={monthRanges} onRangeChange={onDrinkTypeChange} />}
       actions={
-        <ActionPanel>
-          <Action.Push title="Add Room" target={<AddRoom />} />
-        </ActionPanel>
+        isLoading || items.length > 0 ? null : (
+          <ActionPanel>
+            <Action.Push title="Add Room" target={<AddRoom />} />
+          </ActionPanel>
+        )
       }
     >
       {items?.map((item) => {
@@ -80,7 +83,7 @@ export default function ListEvents({ calendarId }: { calendarId: string }) {
             actions={
               <ActionPanel>
                 <Action.Push
-                  title="Select"
+                  title="Import Event"
                   target={
                     <RoomProvider>
                       <AddRoom
