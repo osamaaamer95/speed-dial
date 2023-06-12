@@ -15,7 +15,15 @@
       "name": "list-rooms",
       "title": "View Rooms",
       "description": "Show a list of your saved meeting rooms",
-      "mode": "view"
+      "mode": "view",
+      "arguments": [
+        {
+          "name": "room",
+          "placeholder": "Name",
+          "type": "text",
+          "required": false
+        }
+      ]
     },
     {
       "name": "add-room",

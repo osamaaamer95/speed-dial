@@ -6,8 +6,10 @@ import EditRoom from "../edit-room";
 import AddRoom from "./AddRoomForm";
 import { AppIcons, SupportedApps } from "../types";
 
-export default function ListRooms() {
+export default function ListRooms(props: { name?: string }) {
+  const { name } = props;
   const roomContext = useContext(RoomContext);
+  const [searchText, setSearchText] = useState(name);
 
   if (!roomContext) {
     throw new Error("ListRooms must be used within a RoomProvider");
@@ -26,6 +28,10 @@ export default function ListRooms() {
   return (
     <List
       isLoading={loading}
+      searchText={searchText}
+      filtering={true}
+      onSearchTextChange={setSearchText}
+      searchBarPlaceholder="Search rooms"
       actions={
         <ActionPanel>
           <Action.Push title="Add Room" target={<AddRoom />} />
