@@ -135,8 +135,6 @@ export async function fetchEvents(calendarId: string, monthRange: MonthRange): P
   const url =
     `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?` + params.toString();
 
-  console.log("fetching events from", url);
-
   const response = await fetch(url, {
     headers: {
       "Content-Type": "application/json",
