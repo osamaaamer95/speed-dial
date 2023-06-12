@@ -12,6 +12,12 @@ enum SupportedApps {
   Generic = "Generic",
 }
 
+enum MonthRange {
+  CURRENT_MONTH = "CURRENT_MONTH",
+  NEXT_MONTH = "NEXT_MONTH",
+  LAST_THREE_MONTHS = "LAST_THREE_MONTHS",
+}
+
 type Room = {
   url: string;
   name: string;
@@ -87,6 +93,6 @@ type GetEventsResponse = {
   items: Event[];
 };
 
-export { SupportedApps, AppIcons };
+export { SupportedApps, AppIcons, MonthRange };
 
 export type { Room, GetCalendarsResponse, Calendar, Event, GetEventsResponse, FetchColorsResponse };

@@ -1,40 +1,58 @@
-import { ActionPanel, Action, List, showToast, Toast, Detail, Icon } from "@raycast/api";
+import { ActionPanel, Action, List, showToast, Toast, Icon } from "@raycast/api";
 
 import { useEffect, useState } from "react";
 import AddRoom from "./AddRoomForm";
-import { Event, FetchColorsResponse } from "../types";
-import * as google from "../utils/google";
+import { Event, FetchColorsResponse, MonthRange, Room } from "../types";
+import * as google from "../oauth/google";
+import { MonthsDropdown } from "./MonthDropdown";
+import { detectMeetingApp, isMeetLink, isMeetingLink } from "../utils";
+import { RoomProvider } from "../contexts/RoomsContext";
 
 export default function ListEvents({ calendarId }: { calendarId: string }) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [items, setItems] = useState<Event[]>([]);
   const [colors, setColors] = useState<FetchColorsResponse>();
+  const [monthRange, setMonthRange] = useState<MonthRange>();
+
+  const monthRanges = [
+    { id: MonthRange.CURRENT_MONTH, name: "Events from the current month" },
+    { id: MonthRange.NEXT_MONTH, name: "Events from next month" },
+    { id: MonthRange.LAST_THREE_MONTHS, name: "Events from last three months" },
+  ];
 
   useEffect(() => {
     (async () => {
-      try {
-        await google.authorize();
-        const fetchedItems = await google.fetchEvents(calendarId);
-        const colors = await google.fetchColors();
-        setColors(colors);
-        setItems(fetchedItems);
-        setIsLoading(false);
-      } catch (error) {
-        console.error(error);
-        setIsLoading(false);
-        showToast({ style: Toast.Style.Failure, title: String(error) });
+      if (monthRange && calendarId) {
+        setIsLoading(true);
+        try {
+          await google.authorize();
+          const colors = await google.fetchColors();
+          const fetchedItems = await google.fetchEvents(calendarId, monthRange);
+          const filteredEvents = fetchedItems.filter(
+            (event) => isMeetLink(event.hangoutLink || "") || isMeetingLink(event.location)
+          );
+          setColors(colors);
+          setItems(filteredEvents);
+          setIsLoading(false);
+        } catch (error) {
+          console.error(error);
+          setIsLoading(false);
+          showToast({ style: Toast.Style.Failure, title: String(error) });
+        }
       }
     })();
-  }, [calendarId]);
+  }, [calendarId, monthRange]);
 
-  if (isLoading) {
-    return <Detail isLoading={isLoading} />;
-  }
+  const onDrinkTypeChange = (newValue: string) => {
+    setMonthRange(newValue as MonthRange);
+  };
 
   return (
     <List
       isLoading={isLoading}
       isShowingDetail
+      searchBarPlaceholder="Search events with meeting links"
+      searchBarAccessory={<MonthsDropdown monthRanges={monthRanges} onRangeChange={onDrinkTypeChange} />}
       actions={
         <ActionPanel>
           <Action.Push title="Add Room" target={<AddRoom />} />
@@ -42,7 +60,6 @@ export default function ListEvents({ calendarId }: { calendarId: string }) {
       }
     >
       {items?.map((item) => {
-        console.log({ item });
         return (
           <List.Item
             key={item.id}
@@ -62,7 +79,24 @@ export default function ListEvents({ calendarId }: { calendarId: string }) {
             }
             actions={
               <ActionPanel>
-                <Action.Push title="Select" target={<AddRoom />} />
+                <Action.Push
+                  title="Select"
+                  target={
+                    <RoomProvider>
+                      <AddRoom
+                        room={((): Room => {
+                          const app = detectMeetingApp(item.hangoutLink || item.location);
+                          return {
+                            name: item.summary || "No Title",
+                            url: item.hangoutLink || item.location,
+                            app: app.app,
+                            icon: app.icon,
+                          };
+                        })()}
+                      />
+                    </RoomProvider>
+                  }
+                />
               </ActionPanel>
             }
           ></List.Item>

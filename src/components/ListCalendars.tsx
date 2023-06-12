@@ -2,7 +2,7 @@ import { ActionPanel, Action, List, showToast, Toast, Detail, Icon } from "@rayc
 
 import { useEffect, useState } from "react";
 import { Calendar, FetchColorsResponse } from "../types";
-import * as google from "../utils/google";
+import * as google from "../oauth/google";
 import ListEvents from "./ListEvents";
 
 export default function ListCalendars() {

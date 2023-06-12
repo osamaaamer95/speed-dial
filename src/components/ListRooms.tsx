@@ -1,4 +1,4 @@
-import { ActionPanel, Action, List, Icon, showToast, Toast } from "@raycast/api";
+import { ActionPanel, Action, List, Icon, showToast, Toast, confirmAlert } from "@raycast/api";
 
 import { RoomContext } from "../contexts/RoomsContext";
 import { useContext } from "react";
@@ -10,7 +10,7 @@ export default function ListRooms() {
   const roomContext = useContext(RoomContext);
 
   if (!roomContext) {
-    throw new Error("Command must be used within a RoomProvider");
+    throw new Error("ListRooms must be used within a RoomProvider");
   }
 
   const { rooms, removeRoom, loading } = roomContext;
@@ -45,16 +45,17 @@ export default function ListRooms() {
                 title="Remove"
                 icon={Icon.Trash}
                 shortcut={{ modifiers: ["cmd"], key: "backspace" }}
-                onAction={() =>
-                  removeRoom(item)?.then(() => {
-                    // toast
-                    showToast({
-                      style: Toast.Style.Success,
-                      title: "Yay!",
-                      message: `${item.name} removed`,
+                onAction={async () => {
+                  if (await confirmAlert({ title: "Are you sure?" })) {
+                    removeRoom(item)?.then(() => {
+                      showToast({
+                        style: Toast.Style.Success,
+                        title: "Yay!",
+                        message: `${item.name} removed`,
+                      });
                     });
-                  })
-                }
+                  }
+                }}
               />
             </ActionPanel>
           }

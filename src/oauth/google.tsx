@@ -1,6 +1,6 @@
 import { OAuth } from "@raycast/api";
 import fetch from "node-fetch";
-import { Calendar, Event, FetchColorsResponse, GetCalendarsResponse, GetEventsResponse } from "../types";
+import { Calendar, Event, FetchColorsResponse, GetCalendarsResponse, GetEventsResponse, MonthRange } from "../types";
 
 const clientId = "744024519316-itr7tgto1idb8bsm2o7r9gl8ph53dsmu.apps.googleusercontent.com";
 
@@ -101,17 +101,33 @@ export async function fetchCalendars(): Promise<Calendar[]> {
   return json.items;
 }
 
-export async function fetchEvents(calendarId: string): Promise<Event[]> {
+export async function fetchEvents(calendarId: string, monthRange: MonthRange): Promise<Event[]> {
   const params = new URLSearchParams();
-  // get events from this month only
+
+  // get events from month range
+  const timeMin = new Date();
+
   // calculate max time for end of current month
   const timeMax = new Date();
-  timeMax.setMonth(timeMax.getMonth() + 3);
+  timeMax.setMonth(timeMax.getMonth() + 1);
   timeMax.setDate(0);
-  // calculate min time from three months ago
-  const timeMin = new Date();
-  timeMin.setMonth(timeMin.getMonth() - 3);
-  timeMin.setDate(1);
+
+  if (monthRange === MonthRange.CURRENT_MONTH) {
+    // calculate min time from start of current month
+    timeMin.setDate(1);
+  } else if (monthRange === MonthRange.LAST_THREE_MONTHS) {
+    // calculate min time from start of three months ago
+    timeMin.setMonth(timeMin.getMonth() - 3);
+    timeMin.setDate(1);
+  } else if (monthRange === MonthRange.NEXT_MONTH) {
+    // calculate min time from start of next month
+    timeMin.setMonth(timeMin.getMonth() + 1);
+    timeMin.setDate(1);
+
+    // calculate max time for end of next month
+    timeMax.setMonth(timeMax.getMonth() + 2);
+    timeMax.setDate(0);
+  }
 
   params.append("timeMax", timeMax.toISOString());
   params.append("timeMin", timeMin.toISOString());
@@ -132,6 +148,5 @@ export async function fetchEvents(calendarId: string): Promise<Event[]> {
     throw new Error(response.statusText);
   }
   const json = (await response.json()) as GetEventsResponse;
-  console.log({ json });
   return json.items;
 }

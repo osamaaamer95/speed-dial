@@ -6,7 +6,9 @@ import { RoomContext } from "../contexts/RoomsContext";
 import { AppIcons, Room, SupportedApps } from "../types";
 import { isMeetLink, isTeamsLink, isValidUrl, isZoomLink } from "../utils";
 
-export default function AddRoomForm() {
+export default function AddRoomForm(props: { room?: Room }) {
+  const { room } = props;
+
   const roomContext = useContext(RoomContext);
 
   if (!roomContext) {
@@ -15,10 +17,13 @@ export default function AddRoomForm() {
 
   const { addRoom } = roomContext;
 
-  const [detectedApp, setDetectedApp] = useState<{
-    app: SupportedApps;
-    icon: AppIcons;
-  }>();
+  const [detectedApp, setDetectedApp] = useState<
+    | {
+        app: SupportedApps;
+        icon: AppIcons;
+      }
+    | undefined
+  >(room ? { app: room.app, icon: room.icon } : undefined);
 
   const { handleSubmit, itemProps } = useForm<Room>({
     onSubmit(values) {
@@ -49,6 +54,10 @@ export default function AddRoomForm() {
           return "Please enter a valid URL";
         }
       },
+    },
+    initialValues: {
+      name: room?.name ?? "",
+      url: room?.url ?? "",
     },
   });
 
