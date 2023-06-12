@@ -73,9 +73,18 @@ export default function ListEvents({ calendarId }: { calendarId: string }) {
               <List.Item.Detail
                 metadata={
                   <List.Item.Detail.Metadata>
-                    <List.Item.Detail.Metadata.Label title="ID" text={item.id} />
+                    {/* This can also be moved to the API call */}
+                    <List.Item.Detail.Metadata.Label
+                      title="Created On"
+                      text={new Date(item.created).toLocaleString()}
+                    />
+                    <List.Item.Detail.Metadata.Label title="Organizer" text={item.organizer.email} />
                     <List.Item.Detail.Metadata.Separator />
-                    <List.Item.Detail.Metadata.Label title="Link" text={item.hangoutLink || item.location} />
+                    <List.Item.Detail.Metadata.Link
+                      title="Link"
+                      text="View in Google Calendar"
+                      target={item.htmlLink}
+                    />
                   </List.Item.Detail.Metadata>
                 }
               ></List.Item.Detail>

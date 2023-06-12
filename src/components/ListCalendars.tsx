@@ -69,11 +69,6 @@ export default function ListCalendars() {
                   metadata={
                     <List.Item.Detail.Metadata>
                       <List.Item.Detail.Metadata.Label
-                        title="ID"
-                        text={`${item.id}${item.primary ? " (Primary)" : ""}`}
-                      />
-                      <List.Item.Detail.Metadata.Separator />
-                      <List.Item.Detail.Metadata.Label
                         title="Description"
                         text={item.description || "No description"}
                       />
@@ -89,7 +84,7 @@ export default function ListCalendars() {
               }
               actions={
                 <ActionPanel>
-                  <Action.Push title="Select" target={<ListEvents calendarId={item.id} />} />
+                  <Action.Push title="View Events" target={<ListEvents calendarId={item.id} />} />
                 </ActionPanel>
               }
             ></List.Item>
