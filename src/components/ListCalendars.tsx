@@ -1,4 +1,4 @@
-import { ActionPanel, Action, List, showToast, Toast, Detail, Icon } from "@raycast/api";
+import { ActionPanel, Action, List, showToast, Toast, Detail, Icon, confirmAlert, popToRoot } from "@raycast/api";
 
 import { useEffect, useState } from "react";
 import { Calendar, FetchColorsResponse } from "../types";
@@ -32,20 +32,7 @@ export default function ListCalendars() {
   }
 
   return (
-    <List
-      isLoading={isLoading}
-      isShowingDetail
-      actions={
-        <ActionPanel>
-          <Action
-            title="Logout"
-            onAction={() => google.logout()}
-            icon={Icon.Logout}
-            shortcut={{ modifiers: ["cmd"], key: "backspace" }}
-          />
-        </ActionPanel>
-      }
-    >
+    <List isLoading={isLoading} isShowingDetail>
       {items
         .sort((item) => {
           // bring the primary calendar to the top
@@ -84,7 +71,18 @@ export default function ListCalendars() {
               }
               actions={
                 <ActionPanel>
-                  <Action.Push title="View Events" target={<ListEvents calendarId={item.id} />} />
+                  <Action.Push title="View Events" icon={Icon.Eye} target={<ListEvents calendarId={item.id} />} />
+                  <Action
+                    title="Logout"
+                    onAction={async () => {
+                      if (await confirmAlert({ title: "Are you sure?" })) {
+                        google.logout();
+                        popToRoot();
+                      }
+                    }}
+                    icon={Icon.Logout}
+                    shortcut={{ modifiers: ["cmd"], key: "l" }}
+                  />
                 </ActionPanel>
               }
             ></List.Item>
