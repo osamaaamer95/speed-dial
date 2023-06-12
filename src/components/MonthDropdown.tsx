@@ -6,7 +6,7 @@ export function MonthsDropdown(props: { monthRanges: MonthRange[]; onRangeChange
   const { monthRanges, onRangeChange } = props;
   return (
     <List.Dropdown
-      tooltip="Select range to fetch events from"
+      tooltip="Select months to filter events"
       storeValue={true}
       onChange={(newValue) => {
         onRangeChange(newValue);

@@ -84,6 +84,7 @@ export default function ListEvents({ calendarId }: { calendarId: string }) {
                   target={
                     <RoomProvider>
                       <AddRoom
+                        // this can be done when the API call is first made
                         room={((): Room => {
                           const app = detectMeetingApp(item.hangoutLink || item.location);
                           return {

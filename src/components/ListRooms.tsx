@@ -1,7 +1,7 @@
 import { ActionPanel, Action, List, Icon, showToast, Toast, confirmAlert } from "@raycast/api";
 
 import { RoomContext } from "../contexts/RoomsContext";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import EditRoom from "../edit-room";
 import AddRoom from "./AddRoomForm";
 import { AppIcons, SupportedApps } from "../types";
@@ -13,7 +13,15 @@ export default function ListRooms() {
     throw new Error("ListRooms must be used within a RoomProvider");
   }
 
-  const { rooms, removeRoom, loading } = roomContext;
+  const { rooms, removeRoom, loading, refreshRooms } = roomContext;
+
+  // hack to refresh rooms manually when a room is edited
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // we should not need this if we can hook on navigation changes
+  useEffect(() => {
+    refreshRooms();
+  }, [refreshKey]);
 
   return (
     <List
@@ -39,7 +47,7 @@ export default function ListRooms() {
                 title="Edit Name"
                 icon={Icon.Pencil}
                 shortcut={{ modifiers: ["cmd"], key: "e" }}
-                target={<EditRoom room={item} />}
+                target={<EditRoom room={item} setRefreshKey={setRefreshKey} />}
               />
               <Action
                 title="Remove"

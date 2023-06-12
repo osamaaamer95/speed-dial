@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Action, ActionPanel, Form, Toast, popToRoot, showToast } from "@raycast/api";
+import { Action, ActionPanel, Form, Toast, showToast, useNavigation } from "@raycast/api";
 import { useForm, FormValidation } from "@raycast/utils";
 
 import { RoomContext } from "../contexts/RoomsContext";
@@ -9,6 +9,7 @@ import { isMeetLink, isTeamsLink, isValidUrl, isZoomLink } from "../utils";
 export default function AddRoomForm(props: { room?: Room }) {
   const { room } = props;
 
+  const nav = useNavigation();
   const roomContext = useContext(RoomContext);
 
   if (!roomContext) {
@@ -39,10 +40,15 @@ export default function AddRoomForm(props: { room?: Room }) {
             title: "Yay!",
             message: `${values.name} added`,
           });
-          popToRoot();
+          nav.pop();
         })
         .catch(() => {
-          throw new Error("Error adding room");
+          showToast({
+            style: Toast.Style.Failure,
+            title: "Oops!",
+            message: `A room the same URL already exists`,
+          });
+          // throw new Error("Error adding room");
         });
     },
     validation: {
