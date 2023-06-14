@@ -33,8 +33,6 @@ export default function AddRoomForm(props: { room?: Room }) {
         ...values,
         icon: detectedApp?.icon ?? AppIcons.Generic,
         app: detectedApp?.app ?? SupportedApps.Generic,
-        isRecurring: room?.isRecurring ?? false,
-        meetingDate: room?.meetingDate ?? new Date(),
       })
         .then(() => {
           showToast({
