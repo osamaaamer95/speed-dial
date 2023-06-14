@@ -93,14 +93,12 @@ const RoomProvider = ({ children }: RoomProviderProps) => {
     const now = new Date();
     const outdatedRooms = rooms.filter((item) => {
       // if no meeting date or meeting is recurring, skip
-      console.log("item", item);
       if (!item.meetingDate || item.isRecurring) {
         return false;
       }
       const date = new Date(item.meetingDate);
       return !item.isRecurring && date < now;
     });
-    console.log("outdatedRooms", outdatedRooms);
     return outdatedRooms;
   };
 
