@@ -4,12 +4,14 @@ import { Room } from "../types";
 
 type RoomContextType = {
   rooms: Room[];
+  outdatedRooms: () => Room[];
   loading: boolean;
   refreshRooms: () => void;
   setRooms: React.Dispatch<React.SetStateAction<Room[]>>;
   addRoom: (room: Room) => Promise<void>;
   editRoomName: (arg: { url: string; name: string }) => Promise<void>;
   removeRoom: (room: Room) => Promise<void>;
+  removeOutdatedRooms: () => Promise<void>;
 };
 
 const RoomContext = React.createContext<RoomContextType | undefined>(undefined);
@@ -72,8 +74,50 @@ const RoomProvider = ({ children }: RoomProviderProps) => {
     await LocalStorage.setItem("rooms", JSON.stringify(newRooms));
   };
 
+  const removeOutdatedRooms = async () => {
+    const now = new Date();
+    const newRooms = rooms.filter((item) => {
+      // if no meeting date or meeting is recurring, skip
+      if (!item.meetingDate || item.isRecurring) {
+        return true;
+      }
+      const date = new Date(item.meetingDate);
+      return date >= now;
+    });
+    setRooms(newRooms);
+    await LocalStorage.setItem("rooms", JSON.stringify(newRooms));
+  };
+
+  const outdatedRooms = () => {
+    // return a list of rooms that are not recurring and have a meeting date set in the past
+    const now = new Date();
+    const outdatedRooms = rooms.filter((item) => {
+      // if no meeting date or meeting is recurring, skip
+      console.log("item", item);
+      if (!item.meetingDate || item.isRecurring) {
+        return false;
+      }
+      const date = new Date(item.meetingDate);
+      return !item.isRecurring && date < now;
+    });
+    console.log("outdatedRooms", outdatedRooms);
+    return outdatedRooms;
+  };
+
   return (
-    <RoomContext.Provider value={{ loading, refreshRooms, rooms, setRooms, addRoom, editRoomName, removeRoom }}>
+    <RoomContext.Provider
+      value={{
+        rooms,
+        loading,
+        refreshRooms,
+        outdatedRooms,
+        removeOutdatedRooms,
+        setRooms,
+        addRoom,
+        editRoomName,
+        removeRoom,
+      }}
+    >
       {children}
     </RoomContext.Provider>
   );

@@ -104,6 +104,8 @@ export default function ListEvents({ calendarId }: { calendarId: string }) {
                             url: item.hangoutLink || item.location,
                             app: app.app,
                             icon: app.icon,
+                            isRecurring: !!item.recurringEventId,
+                            meetingDate: new Date(item.start.dateTime || item.start.date),
                           };
                         })()}
                       />

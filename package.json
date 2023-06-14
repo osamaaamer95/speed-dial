@@ -36,6 +36,12 @@
       "title": "Import from Google Calendar",
       "description": "Import your Google Calendar events to speed dial",
       "mode": "view"
+    },
+    {
+      "name": "trim",
+      "title": "Trim Rooms",
+      "description": "Remove rooms for past meetings",
+      "mode": "view"
     }
   ],
   "dependencies": {
